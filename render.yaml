@@ -8,7 +8,7 @@ services:
       gunicorn app:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.0
+        value: 3.11.7
       - key: FLASK_APP
         value: app.py
       - key: DATABASE_URL
