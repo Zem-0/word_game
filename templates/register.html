@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 450px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .link-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .link-section a {
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .link-section a:hover {
+            text-decoration: underline;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+        
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .flash-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .flash-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .password-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .role-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Register</h1>
+    
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            {{ form.username.label }}
+            {{ form.username() }}
+        </div>
+        
+        <div class="form-group">
+            {{ form.password.label }}
+            {{ form.password() }}
+            <div class="password-requirements">
+                Password must contain at least one special character (@#$%^&+=!)
+            </div>
+        </div>
+        
+        <div class="form-group">
+            {{ form.confirm_password.label }}
+            {{ form.confirm_password() }}
+        </div>
+        
+        <div class="form-group">
+            {{ form.role.label }}
+            {{ form.role() }}
+            <div class="role-info">
+                Choose your role: Player (regular user) or Admin (full access)
+            </div>
+        </div>
+        
+        <div class="form-group">
+            {{ form.submit(class="btn") }}
+        </div>
+    </form>
+    
+    <div class="link-section">
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+</body>
+</html>

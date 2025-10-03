@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .game-list {
+            margin-top: 20px;
+        }
+        .game-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .game-id {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .game-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-won {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-lost {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status-incomplete {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .game-details {
+            color: #666;
+            font-size: 14px;
+        }
+        .stats {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Game History</h1>
+            <a href="{{ url_for('user_dashboard') }}" class="btn">Back to Dashboard</a>
+        </div>
+        
+        {% if games %}
+        <div class="game-list">
+            <h3>Recent Games</h3>
+            {% for game in games %}
+            <div class="game-item {% if game.won %}won{% elif game.finished %}lost{% else %}incomplete{% endif %}">
+                <div class="game-header">
+                    <span class="game-id">Game #{{ game.game_id }}</span>
+                    <span class="game-status 
+                        {% if game.won %}status-won{% elif game.finished %}status-lost{% else %}status-incomplete{% endif %}">
+                        {% if game.won %}Won{% elif game.finished %}Lost{% else %}Incomplete{% endif %}
+                    </span>
+                </div>
+                <div class="game-details">
+                    <strong>Guesses:</strong> {{ game.guesses_count }}/5
+                    {% if game.started_at %}
+                    <br><strong>Started:</strong> {{ game.started_at.strftime('%Y-%m-%d %H:%M') }}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <h3>No games yet!</h3>
+            <p>Start your first game to see your history here.</p>
+            <a href="{{ url_for('user_dashboard') }}" class="btn">Start a Game</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

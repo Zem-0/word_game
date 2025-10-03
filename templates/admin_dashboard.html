@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .welcome {
+            color: #333;
+        }
+        .admin-badge {
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #c82333;
+        }
+        .admin-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .admin-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+        .admin-card h3 {
+            margin-top: 0;
+            color: #dc3545;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .report-section {
+            margin: 15px 0;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .stat-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .stat-value {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        input[type="date"], select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 class="welcome">Admin Dashboard</h1>
+                <p>Welcome, <strong>{{ current_user.username }}</strong> <span class="admin-badge">ADMIN</span></p>
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn">Logout</a>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'success' %}
+                        <div class="success">{{ message }}</div>
+                    {% elif category == 'danger' %}
+                        <div class="danger">{{ message }}</div>
+                    {% else %}
+                        <div class="success">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="admin-content">
+            <div class="admin-card">
+                <h3>Daily Report</h3>
+                <div id="daily-report">
+                    <p>Select a date to view daily statistics:</p>
+                    <input type="date" id="daily-date" onchange="loadDailyReport()">
+                    <div id="daily-stats" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <h3>User Report</h3>
+                <div id="user-report">
+                    <p>Select a user to view their statistics:</p>
+                    <select id="user-select" onchange="loadUserReport()">
+                        <option value="">Select a user...</option>
+                    </select>
+                    <div id="user-stats" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+            
+            <div class="admin-card">
+                <h3>System Overview</h3>
+                <div id="system-overview">
+                    <p>Loading system statistics...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load users on page load
+        window.onload = function() {
+            loadUsers();
+            loadSystemOverview();
+        };
+
+        // Load users for the dropdown
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users');
+                const users = await response.json();
+                const select = document.getElementById('user-select');
+                select.innerHTML = '<option value="">Select a user...</option>';
+                users.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.textContent = user.username;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        // Load daily report
+        async function loadDailyReport() {
+            const date = document.getElementById('daily-date').value;
+            if (!date) return;
+
+            const statsDiv = document.getElementById('daily-stats');
+            statsDiv.innerHTML = '<p class="loading">Loading daily statistics...</p>';
+
+            try {
+                const response = await fetch(`/api/admin/daily-report?date=${date}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    statsDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                    return;
+                }
+
+                statsDiv.innerHTML = `
+                    <div class="report-section">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Users:</span>
+                            <span class="stat-value">${data.total_users}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Correct Guesses:</span>
+                            <span class="stat-value">${data.correct_guesses}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Games:</span>
+                            <span class="stat-value">${data.total_games}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Games Won:</span>
+                            <span class="stat-value">${data.games_won}</span>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                statsDiv.innerHTML = '<p class="error">Error loading daily report</p>';
+            }
+        }
+
+        // Load user report
+        async function loadUserReport() {
+            const userId = document.getElementById('user-select').value;
+            if (!userId) {
+                document.getElementById('user-stats').innerHTML = '';
+                return;
+            }
+
+            const statsDiv = document.getElementById('user-stats');
+            statsDiv.innerHTML = '<p class="loading">Loading user statistics...</p>';
+
+            try {
+                const response = await fetch(`/api/admin/user-report?user_id=${userId}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    statsDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                    return;
+                }
+
+                let html = '<div class="report-section">';
+                data.reports.forEach(report => {
+                    html += `
+                        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                            <div class="stat-item">
+                                <span class="stat-label">Date:</span>
+                                <span class="stat-value">${report.date}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Words Tried:</span>
+                                <span class="stat-value">${report.words_tried}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Correct Guesses:</span>
+                                <span class="stat-value">${report.correct_guesses}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                statsDiv.innerHTML = html;
+            } catch (error) {
+                statsDiv.innerHTML = '<p class="error">Error loading user report</p>';
+            }
+        }
+
+        // Load system overview
+        async function loadSystemOverview() {
+            const overviewDiv = document.getElementById('system-overview');
+            overviewDiv.innerHTML = '<p class="loading">Loading system statistics...</p>';
+
+            try {
+                const response = await fetch('/api/admin/system-overview');
+                const data = await response.json();
+                
+                if (data.error) {
+                    overviewDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                    return;
+                }
+
+                overviewDiv.innerHTML = `
+                    <div class="report-section">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Users:</span>
+                            <span class="stat-value">${data.total_users}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Games:</span>
+                            <span class="stat-value">${data.total_games}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Games Won:</span>
+                            <span class="stat-value">${data.games_won}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Win Rate:</span>
+                            <span class="stat-value">${data.win_rate}%</span>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                overviewDiv.innerHTML = '<p class="error">Error loading system overview</p>';
+            }
+        }
+    </script>
+</body>
+</html>

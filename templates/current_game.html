@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .btn:hover {
+            background-color: #c82333;
+        }
+        .btn-primary {
+            background-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        .game-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .guess-form {
+            margin-bottom: 30px;
+        }
+        .guess-input {
+            width: 200px;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            text-transform: uppercase;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .guess-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        .guess-history {
+            margin-top: 20px;
+        }
+        .guess-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        .letter-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 4px;
+            color: white;
+        }
+        .green { background-color: #28a745; }
+        .yellow { background-color: #ffc107; color: #212529; }
+        .gray { background-color: #6c757d; }
+        .orange { background-color: #ffc107; color: #212529; }
+        .grey { background-color: #6c757d; }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .alert-success { background-color: #d4edda; color: #155724; }
+        .alert-danger { background-color: #f8d7da; color: #721c24; }
+        .alert-warning { background-color: #fff3cd; color: #856404; }
+        .alert-info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Current Game</h1>
+            <div>
+                <a href="{{ url_for('user_dashboard') }}" class="btn">Dashboard</a>
+                <a href="{{ url_for('end_game', game_id=game.id) }}" class="btn btn-warning">End Game</a>
+            </div>
+        </div>
+        
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <div class="game-info">
+            <h3>Game Status</h3>
+            <p><strong>Guesses Left:</strong> {{ guesses_left }}</p>
+            <p><strong>Game ID:</strong> {{ game.id }}</p>
+        </div>
+        
+        {% if not game.finished %}
+        <div class="guess-form">
+            <form method="POST" action="{{ url_for('make_guess', game_id=game.id) }}">
+                <input type="text" name="guess" class="guess-input" maxlength="5" minlength="5" 
+                       placeholder="Enter 5-letter word" required>
+                <button type="submit" class="btn btn-primary">Submit Guess</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <strong>Game Finished!</strong>
+            {% if game.won %}
+                Congratulations! You won!
+            {% else %}
+                Game over! Better luck next time.
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if guesses %}
+        <div class="guess-history">
+            <h3>Guess History</h3>
+            {% for guess in guesses %}
+            <div class="guess-row">
+                {% for i in range(5) %}
+                    <div class="letter-box {{ guess.result[i] }}">
+                        {{ guess.guess_word[i] }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
