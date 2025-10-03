@@ -6,9 +6,10 @@ class Config:
     
     SECRET_KEY = os.environ.get("SECRET_KEY") or "supersecretkey"
     
-    # Use SQLite for development, but allow DATABASE_URL override for production
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or \
-        f"sqlite:///{os.path.join(BASE_DIR, 'game_app.db')}"
+    # Default to local PostgreSQL if no DATABASE_URL is provided
+    DEFAULT_DB_URL = "postgresql://word_game_user:w1mSBI2N2j0pTuHpU0PmjxLvfzTeLTUT@dpg-d3ftdg3e5dus73euufk0-a/word_game"
+    
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or DEFAULT_DB_URL
     
     # If DATABASE_URL starts with postgres://, replace it with postgresql://
     # This is needed because SQLAlchemy expects postgresql:// but Heroku/Render provides postgres://
