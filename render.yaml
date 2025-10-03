@@ -4,11 +4,11 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: |
-      flask db upgrade
-      gunicorn app:app
+      python -m flask db upgrade
+      gunicorn --workers 4 --bind 0.0.0.0:$PORT app:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.7
+        value: 3.9.18
       - key: FLASK_APP
         value: app.py
       - key: DATABASE_URL
