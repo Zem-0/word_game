@@ -12,4 +12,4 @@ services:
       - key: FLASK_APP
         value: app.py
       - key: DATABASE_URL
-        value: postgresql://word_game_user:w1mSBI2N2j0pTuHpU0PmjxLvfzTeLTUT@dpg-d3ftdg3e5dus73euufk0-a/word_game
+        value: postgresql://word_game_user:w1mSBI2N2j0pTuHpU0PmjxLvfzTeLTUT@dpg-d3ftdg3e5dus73euufk0-a.oregon-postgres.render.com/word_game

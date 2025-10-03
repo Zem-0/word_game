@@ -7,7 +7,7 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "supersecretkey"
     
     # Default to local PostgreSQL if no DATABASE_URL is provided
-    DEFAULT_DB_URL = "postgresql://word_game_user:w1mSBI2N2j0pTuHpU0PmjxLvfzTeLTUT@dpg-d3ftdg3e5dus73euufk0-a/word_game"
+    DEFAULT_DB_URL = "postgresql://word_game_user:w1mSBI2N2j0pTuHpU0PmjxLvfzTeLTUT@dpg-d3ftdg3e5dus73euufk0-a.oregon-postgres.render.com/word_game"
     
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or DEFAULT_DB_URL
     
