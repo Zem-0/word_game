@@ -1,4 +1,4 @@
-# Dependencies for the Word Game application
+﻿# Dependencies for the Word Game application
 Flask==3.0.0
 Flask-SQLAlchemy==3.1.1
 Flask-Migrate==4.0.5
@@ -8,8 +8,6 @@ WTForms==3.1.1
 Werkzeug==3.0.1
 python-dotenv==1.0.0
 gunicorn==21.2.0
-psycopg[binary]==3.2.10
-psycopg-binary==3.2.10
+psycopg[binary]==3.2.10  # PostgreSQL driver with binary dependencies
 alembic==1.12.0
 SQLAlchemy==2.0.23
-greenlet==3.0.1
