@@ -82,7 +82,20 @@ def logout():
 @app.route("/start_game", methods=["POST"])
 @login_required
 def start_game():
-    word = random.choice(Word.query.all())
+    # Check if we have any words, if not add them
+    words = Word.query.all()
+    if not words:
+        default_words = [
+            'APPLE', 'BRAVE', 'CHESS', 'DRIVE', 'EAGLE',
+            'FAITH', 'GRAPE', 'HOUSE', 'INPUT', 'JUMBO'
+        ]
+        for word in default_words:
+            db.session.add(Word(word=word))
+        db.session.commit()
+        words = Word.query.all()
+
+    # Start the game
+    word = random.choice(words)
     new_game = Game(user_id=current_user.id, word_id=word.id)
     db.session.add(new_game)
     db.session.commit()
