@@ -67,11 +67,3 @@ Open http://127.0.0.1:5000 in your browser.
 
 - To add more words, update `seed_words.py` or create new migration files and use the ORM to insert data.
 - Templates live in `templates/` and can be edited to change the UI.
-
-## License
-
-This project doesn't specify a license. Add a `LICENSE` file if you want to make licensing explicit.
-
-## Contact
-
-If you want changes to the README or additional setup helpers (Dockerfile, Makefile, CI), ask and I can add them.
