@@ -2,13 +2,10 @@ def grade_guess(target, guess):
     target_chars = list(target)
     result = [None]*5
 
-    # First pass: green
     for i in range(5):
         if guess[i] == target[i]:
             result[i] = "green"
             target_chars[i] = None
-
-    # Second pass: orange/grey
     freq = {}
     for ch in target_chars:
         if ch:

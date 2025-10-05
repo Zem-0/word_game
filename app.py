@@ -82,7 +82,6 @@ def logout():
 @app.route("/start_game", methods=["POST"])
 @login_required
 def start_game():
-    # Check if we have any words, if not add them
     words = Word.query.all()
     if not words:
         default_words = [
@@ -94,7 +93,6 @@ def start_game():
         db.session.commit()
         words = Word.query.all()
 
-    # Start the game
     word = random.choice(words)
     new_game = Game(user_id=current_user.id, word_id=word.id)
     db.session.add(new_game)
@@ -106,7 +104,6 @@ def start_game():
 @app.route("/current_game")
 @login_required
 def get_current_game():
-    """Get the current active game for the logged-in user"""
     current_game_id = session.get('current_game_id')
     if not current_game_id:
         active_game = Game.query.filter_by(user_id=current_user.id, finished=False).first()
@@ -147,7 +144,6 @@ def get_current_game():
 @app.route("/game_history")
 @login_required
 def game_history():
-    """Show user's game history"""
     games = Game.query.filter_by(user_id=current_user.id).order_by(Game.id.desc()).limit(20).all()
     game_stats = []
     for game in games:
@@ -202,7 +198,6 @@ def make_guess(game_id):
 @app.route("/end_game/<int:game_id>")
 @login_required
 def end_game(game_id):
-    """End the current game early"""
     game = Game.query.get_or_404(game_id)
     if game.user_id != current_user.id:
         flash("Access denied", "danger")
@@ -218,7 +213,6 @@ def end_game(game_id):
 @app.route("/api/admin/users")
 @login_required
 def api_admin_users():
-    """Get list of all users for admin reports"""
     if current_user.role != "admin":
         return jsonify({"error": "Access denied"}), 403
     users = User.query.all()
@@ -227,7 +221,6 @@ def api_admin_users():
 @app.route("/api/admin/daily-report")
 @login_required
 def api_admin_daily_report():
-    """Get daily report for a specific date"""
     if current_user.role != "admin":
         return jsonify({"error": "Access denied"}), 403
     date = request.args.get('date')

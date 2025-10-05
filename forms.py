@@ -24,7 +24,7 @@ class RegistrationForm(FlaskForm):
     )
     role = SelectField(
         "Role",
-        choices=[("player", "Player"), ("admin", "Admin")],  # dropdown to select role
+        choices=[("player", "Player"), ("admin", "Admin")],
         validators=[DataRequired()]
     )
     submit = SubmitField("Register")

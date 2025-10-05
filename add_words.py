@@ -12,7 +12,7 @@ def add_words():
             if not existing:
                 db.session.add(Word(word=word))
         db.session.commit()
-        print(f"Added words to database. Total words: {Word.query.count()}")
+        print(f"Total words: {Word.query.count()}")
 
 if __name__ == '__main__':
     add_words()
